@@ -1,1 +1,3 @@
-jacobi_solver_3d_grid
+
+### JACOBI SOLVER FOR SOLVING 3D POISSON EQUATION
+#### -Work in Progress
