@@ -25,8 +25,25 @@ def setDataQ7(a_np_array,i,j,k,val):
     a_np_array[((i+1)*100)+((j+1)*10)+k+1] = val
     return a_np_array
 
+def getDataGhostQ13(a_np_array,i,j,k):
+    ''' if input 0 0 0 is ghost '''
+    return a_np_array[(i*144)+(j*12)+k]
+
+def getDataQ13(a_np_array,i,j,k):
+    '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
+    
+    return a_np_array[((i+2)*144)+((j+2)*12)+k+2]
+
+def setDataGhostQ13(a_np_array,i,j,k,val):
+    a_np_array[(i*144)+(j*12)+k] = val
+    return a_np_array
+
+def setDataQ13(a_np_array,i,j,k,val):
+    a_np_array[((i+2)*144)+((j+2)*12)+k+2] = val
+    return a_np_array
+
 #TODO: now write the D313 version and compare convergence behaviour     
-def ExecuteOneJacobiStepD3Q7(input_array,rhs_array,relax_param):
+def ExecuteOneJacobiStepD3Q7(input_array,output_array,rhs_array,relax_param):
     for i in range(8):
         for j in range(8):
             for k in range(8):
@@ -52,12 +69,80 @@ def ExecuteOneJacobiStepD3Q7(input_array,rhs_array,relax_param):
                 fct+=(1/pow(delta_x,2))
                 
                 val = relax_param*((v-getDataQ7(rhs_array,i,j,k))/fct) + (1-relax_param) *getDataQ7(input_array,i,j,k)
-                
-                input_array = setDataQ7(input_array, i, j, k, val)
+                output_array = setDataQ7(output_array, i, j, k, val)
     
-    return input_array
+    return output_array
+          
+          
+# if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+4,j+2,k+2))) {v+=-grid->cellDataGhost(input_array,i+4,j+2,k+2,input_type)* grid->getH_inv2(X) * (1.0/12.0);fct+=grid->getH_inv2(X)* 0.625; }
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+3,j+2,k+2))) {v+=16* grid->cellDataGhost(input_array,i+3,j+2,k+2,input_type) * grid->getH_inv2(X) * (1.0/12.0); fct+=grid->getH_inv2(X)* 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+1,j+2,k+2))) {v+=16* grid->cellDataGhost(input_array,i+1,j+2,k+2,input_type) * grid->getH_inv2(X) * (1.0/12.0); fct+=grid->getH_inv2(X)*0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i,j+2,k+2))) {v+=-grid->cellDataGhost(input_array,i,j+2,k+2,input_type) *  grid->getH_inv2(X) * (1.0/12.0); fct+=grid->getH_inv2(X)*0.625;}
+# 
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+4,k+2))) {v+=-grid->cellDataGhost(input_array,i+2,j+4,k+2,input_type)* grid->getH_inv2(Y) * (1.0/12.0); fct+= grid->getH_inv2(Y) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+3,k+2))) {v+=16* grid->cellDataGhost(input_array,i+2,j+3,k+2,input_type) * grid->getH_inv2(Y) * (1.0/12.0); fct+= grid->getH_inv2(Y) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+1,k+2))) {v+=16* grid->cellDataGhost(input_array,i+2,j+1,k+2,input_type) * grid->getH_inv2(Y) * (1.0/12.0); fct+= grid->getH_inv2(Y) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j,k+2))) {v+=-grid->cellDataGhost(input_array,i+2,j,k+2,input_type) * grid->getH_inv2(Y) * (1.0/12.0); fct+= grid->getH_inv2(Y) * 0.625;}
+# 
+#             #ifndef USE_PSEUDO_2D
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+2,k+4))) {v+=-grid->cellDataGhost(input_array,i+2,j+2,k+4,input_type) * grid->getH_inv2(Z) * (1.0/12.0); fct+= grid->getH_inv2(Z) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+2,k+3))) {v+=16* grid->cellDataGhost(input_array,i+2,j+2,k+3,input_type) * grid->getH_inv2(Z) * (1.0/12.0); fct+= grid->getH_inv2(Z) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+2,k+1))) {v+=16* grid->cellDataGhost(input_array,i+2,j+2,k+1,input_type) * grid->getH_inv2(Z) * (1.0/12.0); fct+= grid->getH_inv2(Z) * 0.625;}
+#             if(BCTYPE::isPressDirichlet(grid->cellTypeGhost(i+2,j+2,k))) {v+=-grid->cellDataGhost(input_array,i+2,j+2,k,input_type) * grid->getH_inv2(Z) * (1.0/12.0); fct+= grid->getH_inv2(Z) * 0.625;}
+#             #endif    
+def ExecuteOneJacobiStepD3Q13(input_array,output_array,rhs_array,relax_param):
+    for i in range(8):
+        for j in range(8):
+            for k in range(8):
+                v= 0
+                fct = 0
                 
-
+                v+=(-1*getDataQ13(input_array, i+2, j, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(16*getDataQ13(input_array, i+1, j, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(-1*getDataQ13(input_array, i-2, j, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(16*getDataQ13(input_array, i-1, j, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                
+                v+=(-1*getDataQ13(input_array, i, j+2, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(16*getDataQ13(input_array, i, j+1, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(-1*getDataQ13(input_array, i, j-2, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                v+=(16*getDataQ13(input_array, i, j-1, k)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2))*0.625 )
+                
+                
+                v+=(-1*getDataQ13(input_array, i, j, k+2)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2)) * 0.625 )
+                
+                v+=(16*getDataQ13(input_array, i, j, k+1)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2)) * 0.625 )
+                
+                v+=(-1*getDataQ13(input_array, i, j, k-2)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2)) * 0.625 )
+                
+                v+=(16*getDataQ13(input_array, i, j, k-1)*(1/pow(delta_x,2))*(1.0/12.0))
+                fct+=((1/pow(delta_x,2)) * 0.625 )
+                
+                val = relax_param*((v-getDataQ13(rhs_array,i,j,k))/fct) + (1-relax_param) * getDataQ13(input_array,i,j,k)
+                
+                
+                output_array = setDataQ13(output_array, i, j, k, val)
+                
+    return output_array
+                
+                
 def setD1Q3(output_array,i,val):
     output_array[i] = val
     return output_array
