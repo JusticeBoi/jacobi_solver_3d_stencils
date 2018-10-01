@@ -4,11 +4,90 @@ Created on Sep 7, 2018
 @author: oguz
 '''
 grid_size = 8
+delta_x = 1
 delta_x_7 = 1.0
 delta_x_13 = 1.0
 import numpy as np
 #define COMP_CELL_IDX(I,J,K,N) ((I)*(N[Y]+2)*(N[Z]+2) + (J)*(N[Z]+2) + (K))
 
+##D1Q3 functions
+def setD1Q3(output_array,i,val):
+    output_array[i] = val
+    return output_array
+ 
+def ExecuteOneJacobiStepD1Q3(input_array,output_array,rhs_array,relax_param):
+    for i in range(8):
+        v= 0
+        fct = 0
+        
+        v += input_array[i+2]*(1/pow(delta_x,2))
+        fct+=(1/pow(delta_x,2))
+        v += input_array[i]*(1/pow(delta_x,2))
+        fct+=(1/pow(delta_x,2))
+        
+        val = relax_param * ((v-rhs_array[i+1])/fct) + (1-relax_param)*input_array[i+1]
+        output_array[i+1] = val
+    return output_array 
+
+##D1Q5 functions
+def getDataGhostQ5(a_np_array,i):
+    ''' if input 0 0 0 is ghost '''
+    return a_np_array[i]
+
+def getDataQ5(a_np_array,i):
+    '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
+    return a_np_array[i+2]
+
+def setDataQ5(a_np_array,i,val):
+    a_np_array[i+2] = val
+    return a_np_array
+
+def ExecuteOneJacobiStepD1Q5(input_array,output_array,rhs_array,relax_param):
+    for i in range(8):
+        v= 0
+        fct = 0
+        
+        v += (-1*getDataQ5(input_array,i+2)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        v += ((16.)*getDataQ5(input_array,i+1)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        
+        v += (-1*getDataQ5(input_array,i-2)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        v += ((16.)*getDataQ5(input_array,i-1)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        
+        val = relax_param * ((v-getDataQ5(rhs_array,i))/fct) + (1-relax_param)*getDataQ5(input_array,i)
+        setDataQ5(output_array,i,val)
+    return output_array 
+            
+
+##D2Q9 functions
+def setDataGhostD2Q9(a_np_array,i,j,val):
+    a_np_array[(i*10)+j] = val
+    return a_np_array
+
+def setDataD2Q9(a_np_array,i,j,val):
+    a_np_array[((i+1)*10)+ j +1] = val
+    return a_np_array
+
+def getDataGhostD2Q9(a_np_array,i,j):
+    ''' if input 0 0 0 is ghost '''
+    return a_np_array[(i*10)+j]
+
+def getDataD2Q79(a_np_array,i,j):
+    '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
+    return a_np_array[(i+1)*10 + (j +1) ]
+
+def ExecuteOneJacobiStepD2Q9(input_array,output_array,rhs_array,relax_param):
+     for i in range(8):
+        for j in range(8):
+            v = 0
+            fct = 0
+            
+    
+##D3Q7 functions        
+        
 def getDataGhostQ7(a_np_array,i,j,k):
     ''' if input 0 0 0 is ghost '''
     return a_np_array[(i*100)+(j*10)+k]
@@ -26,24 +105,6 @@ def setDataQ7(a_np_array,i,j,k,val):
     a_np_array[((i+1)*100)+((j+1)*10)+k+1] = val
     return a_np_array
 
-def getDataGhostQ13(a_np_array,i,j,k):
-    ''' if input 0 0 0 is ghost '''
-    return a_np_array[(i*144)+(j*12)+k]
-
-def getDataQ13(a_np_array,i,j,k):
-    '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
-    
-    return a_np_array[((i+2)*144)+((j+2)*12)+k+2]
-
-def setDataGhostQ13(a_np_array,i,j,k,val):
-    a_np_array[(i*144)+(j*12)+k] = val
-    return a_np_array
-
-def setDataQ13(a_np_array,i,j,k,val):
-    a_np_array[((i+2)*144)+((j+2)*12)+k+2] = val
-    return a_np_array
-
-#TODO: now write the D313 version and compare convergence behaviour     
 def ExecuteOneJacobiStepD3Q7(input_array,output_array,rhs_array,relax_param):
     for i in range(8):
         for j in range(8):
@@ -74,6 +135,27 @@ def ExecuteOneJacobiStepD3Q7(input_array,output_array,rhs_array,relax_param):
     
     return output_array
           
+
+
+##D3Q13 functions
+def getDataGhostQ13(a_np_array,i,j,k):
+    ''' if input 0 0 0 is ghost '''
+    return a_np_array[(i*144)+(j*12)+k]
+
+def getDataQ13(a_np_array,i,j,k):
+    '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
+    
+    return a_np_array[((i+2)*144)+((j+2)*12)+k+2]
+
+def setDataGhostQ13(a_np_array,i,j,k,val):
+    a_np_array[(i*144)+(j*12)+k] = val
+    return a_np_array
+
+def setDataQ13(a_np_array,i,j,k,val):
+    a_np_array[((i+2)*144)+((j+2)*12)+k+2] = val
+    return a_np_array
+
+
 def ExecuteOneJacobiStepD3Q13(input_array,output_array,rhs_array,relax_param):
     for i in range(8):
         for j in range(8):
@@ -127,23 +209,5 @@ def ExecuteOneJacobiStepD3Q13(input_array,output_array,rhs_array,relax_param):
     return output_array
                 
                 
-def setD1Q3(output_array,i,val):
-    output_array[i] = val
-    return output_array
- 
-def ExecuteOneJacobiStepD1Q3(input_array,rhs_array,relax_param):
-    out_array = np.zeros(len(input_array))
-    out_array[0] = input_array[0]
-    out_array[9] = input_array[9]
-    for i in range(8):
-        v= 0
-        fct = 0
-        v += input_array[i+2]*(1/pow(delta_x,2))
-        fct+=(1/pow(delta_x,2))
-        v += input_array[i]*(1/pow(delta_x,2))
-        fct+=(1/pow(delta_x,2))
-        val = relax_param * ((v-rhs_array[i+1])/fct) + (1-relax_param)*input_array[i+1]
-        out_array=setD1Q3(out_array,i+1,val)
-    return out_array 
-        
-        
+
+
