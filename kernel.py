@@ -4,9 +4,13 @@ Created on Sep 7, 2018
 @author: oguz
 '''
 grid_size = 8
-delta_x = 1
+delta_x = 1.0
+delta_x_9 = 1.0
+delta_x_9_sqr = 1/pow(delta_x_9,2)
 delta_x_7 = 1.0
 delta_x_13 = 1.0
+five_over_12 = 5.0/12.0
+
 import numpy as np
 #define COMP_CELL_IDX(I,J,K,N) ((I)*(N[Y]+2)*(N[Z]+2) + (J)*(N[Z]+2) + (K))
 
@@ -75,15 +79,50 @@ def getDataGhostD2Q9(a_np_array,i,j):
     ''' if input 0 0 0 is ghost '''
     return a_np_array[(i*10)+j]
 
-def getDataD2Q79(a_np_array,i,j):
+def getDataD2Q9(a_np_array,i,j):
     '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
-    return a_np_array[(i+1)*10 + (j +1) ]
+    return a_np_array[((i+1)*10) + (j +1) ]
 
 def ExecuteOneJacobiStepD2Q9(input_array,output_array,rhs_array,relax_param):
-     for i in range(8):
+    for i in range(8):
         for j in range(8):
             v = 0
             fct = 0
+            
+            v+=(getDataD2Q9(input_array, i-1, j+1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+                
+            v+=(4.0*getDataD2Q9(input_array, i, j+1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(getDataD2Q9(input_array, i+1, j+1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(4.0*getDataD2Q9(input_array, i-1, j)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(4.0*getDataD2Q9(input_array, i+1, j)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(getDataD2Q9(input_array, i-1, j-1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(4.0*getDataD2Q9(input_array, i, j-1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            v+=(getDataD2Q9(input_array, i+1, j-1)*delta_x_9_sqr*(1.0/6.0))
+            fct+=(delta_x_9_sqr*five_over_12)
+            
+            
+            val = relax_param*((v-getDataD2Q9(rhs_array,i,j))/fct) + (1-relax_param) *getDataD2Q9(input_array,i,j)
+            output_array = setDataD2Q9(output_array, i, j, val)
+            
+    return output_array
+            
+            
+            
+            
+            
             
     
 ##D3Q7 functions        
