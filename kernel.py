@@ -33,6 +33,20 @@ def ExecuteOneJacobiStepD1Q3(input_array,output_array,rhs_array,relax_param):
         output_array[i+1] = val
     return output_array 
 
+def ExecuteOneJacobiStepD1Q3Large(input_array,output_array,rhs_array,relax_param):
+    for i in range(98):
+        v= 0
+        fct = 0
+        
+        v += input_array[i+2]*(1/pow(delta_x,2))
+        fct+=(1/pow(delta_x,2))
+        v += input_array[i]*(1/pow(delta_x,2))
+        fct+=(1/pow(delta_x,2))
+        
+        val = relax_param * ((v-rhs_array[i+1])/fct) + (1-relax_param)*input_array[i+1]
+        output_array[i+1] = val
+    return output_array 
+
 ##D1Q5 functions
 def getDataGhostQ5(a_np_array,i):
     ''' if input 0 0 0 is ghost '''
@@ -65,7 +79,24 @@ def ExecuteOneJacobiStepD1Q5(input_array,output_array,rhs_array,relax_param):
         setDataQ5(output_array,i,val)
     return output_array 
             
-
+def ExecuteOneJacobiStepD1Q5Large(input_array,output_array,rhs_array,relax_param):
+    for i in range(98):
+        v= 0
+        fct = 0
+        
+        v += (-1*getDataQ5(input_array,i+2)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        v += ((16.)*getDataQ5(input_array,i+1)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        
+        v += (-1*getDataQ5(input_array,i-2)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        v += ((16.)*getDataQ5(input_array,i-1)*(1/pow(delta_x,2))* (1./12.))
+        fct+=((1/pow(delta_x,2))*0.625)
+        
+        val = relax_param * ((v-getDataQ5(rhs_array,i))/fct) + (1-relax_param)*getDataQ5(input_array,i)
+        setDataQ5(output_array,i,val)
+    return output_array 
 ##D2Q9 functions
 def setDataGhostD2Q9(a_np_array,i,j,val):
     a_np_array[(i*10)+j] = val

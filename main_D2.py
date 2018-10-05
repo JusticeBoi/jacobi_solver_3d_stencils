@@ -48,10 +48,10 @@ for j in [0,9]:
         val_9_exp=exp(2*i + 2*j)
         ker.setDataGhostD2Q9(grid_data_9_exp, i, j, val_9_exp)
         
-print(grid_data_9_exp)
-iter_step = 1
+# print(grid_data_9_exp)
+iter_step = 100
 output_data_9 = np.copy(grid_data_9)
-ans_array_9_1 = np.zeros(iter_step)
+ans_array_9_1 = np.zeros(iter_step) 
 
 output_data_9_exp = np.copy(grid_data_9_exp)
 ans_array_9_1_exp = np.zeros(iter_step)
@@ -70,6 +70,6 @@ for i in range(iter_step):
 end_9 =timeit.time.perf_counter()
 time_9 = end_9-start_9
 for i in range(iter_step):
-#     print("output 9 {:d} iteration x,y,z = 2, 2, 2 : ".format(i),ans_array_9_1[i])
-    print("output 9 exp {:d} iteration x,y,z = 1, 1, 1 : ".format(i),ans_array_9_1_exp[i])
+    print("output 9 {:d} iteration x,y,z = 2, 2, 2 : ".format(i),ans_array_9_1[i])
+#     print("output 9 exp {:d} iteration x,y,z = 1, 1, 1 : ".format(i),ans_array_9_1_exp[i])
 
