@@ -4,7 +4,7 @@ Created on Sep 7, 2018
 @author: oguz
 '''
 grid_size = 8
-delta_x = 1.0
+delta_x =0.0625 
 delta_x_9 = 1.0
 delta_x_9_sqr = 1/pow(delta_x_9,2)
 delta_x_7 = 1.0
@@ -18,20 +18,29 @@ import numpy as np
 def setD1Q3(output_array,i,val):
     output_array[i] = val
     return output_array
- 
+
+
+
+def setDataQ3(a_np_array,i,val):
+    a_np_array[i+1] = val
+    return a_np_array
+
+def getDataQ3(a_np_array,i):
+    return a_np_array[i]
+
 def ExecuteOneJacobiStepD1Q3(input_array,output_array,rhs_array,relax_param):
-    for i in range(8):
+    for i in range(15):
         v= 0
         fct = 0
-        
         v += input_array[i+2]*(1/pow(delta_x,2))
         fct+=(1/pow(delta_x,2))
         v += input_array[i]*(1/pow(delta_x,2))
         fct+=(1/pow(delta_x,2))
-        
         val = relax_param * ((v-rhs_array[i+1])/fct) + (1-relax_param)*input_array[i+1]
-        output_array[i+1] = val
-    return output_array 
+        #output_array[i+1] = val
+        setDataQ3(output_array,i,val) 
+ 
+    return output_array
 
 def ExecuteOneJacobiStepD1Q3Large(input_array,output_array,rhs_array,relax_param):
     for i in range(98):
@@ -61,7 +70,7 @@ def setDataQ5(a_np_array,i,val):
     return a_np_array
 
 def ExecuteOneJacobiStepD1Q5(input_array,output_array,rhs_array,relax_param):
-    for i in range(8):
+    for i in range(13):
         v= 0
         fct = 0
         
@@ -210,26 +219,26 @@ def ExecuteOneJacobiStepD3Q7(input_array,output_array,rhs_array,relax_param):
 ##D3Q13 functions
 def getDataGhostQ13(a_np_array,i,j,k):
     ''' if input 0 0 0 is ghost '''
-    return a_np_array[(i*144)+(j*12)+k]
+    return a_np_array[(i*100)+(j*10)+k]
 
 def getDataQ13(a_np_array,i,j,k):
     '''Gets non-ghost data, if input is 0 0 0, gets 1 1 1 which is not ghost '''
     
-    return a_np_array[((i+2)*144)+((j+2)*12)+k+2]
+    return a_np_array[((i+2)*100)+((j+2)*10)+k+2]
 
 def setDataGhostQ13(a_np_array,i,j,k,val):
-    a_np_array[(i*144)+(j*12)+k] = val
+    a_np_array[(i*100)+(j*10)+k] = val
     return a_np_array
 
 def setDataQ13(a_np_array,i,j,k,val):
-    a_np_array[((i+2)*144)+((j+2)*12)+k+2] = val
+    a_np_array[((i+2)*100)+((j+2)*10)+k+2] = val
     return a_np_array
 
 
 def ExecuteOneJacobiStepD3Q13(input_array,output_array,rhs_array,relax_param):
-    for i in range(8):
-        for j in range(8):
-            for k in range(8):
+    for i in range(6):
+        for j in range(6):
+            for k in range(6):
                 v= 0
                 fct = 0
                 
