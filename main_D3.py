@@ -10,7 +10,7 @@ import timeit
 import matplotlib.pyplot as plt
 import numpy as np
 import kernel as ker
-number_of_iter = 100
+number_of_iter = 50
 ###D3Q7 setting start
 grid_data_7 = np.zeros(10*10*10)
 output_data_7 = np.zeros(10*10*10)
@@ -26,19 +26,19 @@ val_7 = 0
 for i in [0,9]:
     for j in range(10):
         for k in range(10):
-            val_7 =  (i+1)*(i+1) + (j+1)*(j+1) + (k+1)*(k+1)
+            val_7 =  (i)*(i) + (j)*(j) + (k)*(k)
             grid_data_7 = ker.setDataGhostQ7(grid_data_7, i, j, k, val_7)
 for j in [0,9]:
     for i in range(10):
         for k in range(10):
-            val_7 =  (i+1)*(i+1) + (j+1)*(j+1) + (k+1)*(k+1)
+            val_7 =  (i)*(i) + (j)*(j) + (k)*(k)
             grid_data_7 = ker.setDataGhostQ7(grid_data_7, i, j, k, val_7)
 for k in [0,9]:
     for j in range(10):
         for i in range(10):
-            val_7 =  (i+1)*(i+1) + (j+1)*(j+1) + (k+1)*(k+1)
+            val_7 =  (i)*(i) + (j)*(j) + (k)*(k)
             grid_data_7 = ker.setDataGhostQ7(grid_data_7, i, j, k, val_7)
-#print(grid_data_7)
+print(grid_data_7)
 
 ###
 output_data_7 = np.copy(grid_data_7)
@@ -48,7 +48,7 @@ ans_array_7_3 = np.zeros(number_of_iter)
 start_7 = timeit.time.perf_counter()
 for i in range(number_of_iter):
     grid_data_7 = ker.ExecuteOneJacobiStepD3Q7(grid_data_7,output_data_7,rhs_data_7, 2.0/3.0)
-    ans_array_7_1[i]=ker.getDataGhostQ7(output_data_7,1,1,1)
+    ans_array_7_1[i]=ker.getDataGhostQ7(output_data_7,2,2,2)
     ans_array_7_2[i]=ker.getDataGhostQ7(output_data_7,6,6,6)
     ans_array_7_3[i]=ker.getDataGhostQ7(output_data_7,3,3,3)
     output_array_7[i] = output_data_7
@@ -94,11 +94,11 @@ start_13 = timeit.time.perf_counter()
 for i in range(number_of_iter):
     grid_data_13 = ker.ExecuteOneJacobiStepD3Q13(grid_data_13,output_data_13,rhs_data_13, 2.0/3.0)
     ans_array_13_1[i] =ker.getDataGhostQ13(output_data_13,2,2,2)
-    ans_array_13_2[i] = ker.getDataGhostQ13(output_data_13,7,7,7)
-    ans_array_13_3[i] = ker.getDataGhostQ13(output_data_13,4,4,4)
+    ans_array_13_2[i] = ker.getDataGhostQ13(output_data_13,6,6,6)
+    ans_array_13_3[i] = ker.getDataGhostQ13(output_data_13,3,3,3)
     output_array_13[i] = output_data_13
 
-
+#print(ans_array_7_1,ans_array_13_1)
 #print(ans_array_7_3[50], ans_array_13_3[50]  )
 end_13 =timeit.time.perf_counter()
 time_13 = end_13-start_13
@@ -123,12 +123,12 @@ difference_5_3 = np.empty(number_of_iter)
 
 
 for i in range(number_of_iter):
-    difference_3[i] = ((abs(ans_array_7_2[i] -147))/147)*100
-    difference_5[i] = ((abs(ans_array_13_2[i] -147))/147)*100
+    difference_3[i] = ((abs(ans_array_7_2[i] -108))/108)*100
+    difference_5[i] = ((abs(ans_array_13_2[i] -108))/108)*100
     difference_3_1[i] = ((abs(ans_array_7_1[i] -12))/12)*100
     difference_5_1[i] = ((abs(ans_array_13_1[i] -12))/12)*100
-    difference_3_3[i] = ((abs(ans_array_7_3[i] -48))/48)*100
-    difference_5_3[i] = ((abs(ans_array_13_3[i] -48))/48)*100
+    difference_3_3[i] = ((abs(ans_array_7_3[i] -27))/27)*100
+    difference_5_3[i] = ((abs(ans_array_13_3[i] -27))/27)*100
     #print(difference_3_3[i], difference_5_3[i] )
 a_range = np.arange(0.,number_of_iter,1.)
 
