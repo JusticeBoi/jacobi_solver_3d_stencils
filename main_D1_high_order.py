@@ -54,8 +54,6 @@ dif_3 = np.zeros(12)
 dif_5 = np.zeros(12)
 
 number_of_iter = 300 
-output_data_3_array = np.zeros(number_of_iter)
-output_data_5_array = np.zeros(number_of_iter)
 relax = 2.0/3.0
 percent_error_3_through_iterations = np.zeros(number_of_iter)
 percent_error_5_through_iterations = np.zeros(number_of_iter)
@@ -84,7 +82,7 @@ for i in range(number_of_iter):
 a_range = np.arange(0.,number_of_iter)
 plt.plot(a_range,percent_error_3_through_iterations,'-r',label='D1Q3')
 plt.plot(a_range,percent_error_5_through_iterations,'-g',label='D1Q5')
-plt.ylabel('percent difference')
+plt.ylabel('average percent difference')
 plt.xlabel('iteration')
 plt.legend()
 plt.show()
