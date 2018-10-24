@@ -15,6 +15,45 @@ import numpy as np
 #define COMP_CELL_IDX(I,J,K,N) ((I)*(N[Y]+2)*(N[Z]+2) + (J)*(N[Z]+2) + (K))
 
 ##D1Q3 functions
+def getDataD1NonUni(a_np_array,i):
+    return a_np_array[i+1]
+
+def setDataD1NonUni(a_np_array,i,val):
+    a_np_array[i+1] = val
+    return a_np_array
+
+def ExecuteOneJacobiStepD1NonUnii(input_array,output_array,rhs_array,relax_param):
+    print("asd")
+    for i in range(10):
+        v = 0
+        fct = 0
+        if i == 0 or i == 9:
+            print("asd")
+            v += getDataD1NonUni(input_array,i+1)*(1/pow(delta_x,2))
+            fct += (1/pow(delta_x,2))
+            v += getDataD1NonUni(input_array,i-1)*(1/pow(delta_x,2))
+            fct += (1/pow(delta_x,2))
+
+            val = relax_param * ((v-getDataD1NonUni(rhs_array,i))/fct) + (1-relax_param)*getDataD1NonUni(input_array,i)
+            setDataD1NonUni(output_array,i,val)
+        else:
+            print("asd")
+            v += (-1*getDataD1NonUni(input_array,i+2)*(1/pow(delta_x,2))* (1./12.))
+            fct += ((1/pow(delta_x,2))*0.625)
+
+            v += ((16.)*getDataD1NonUni(input_array,i+1)*(1/pow(delta_x,2))* (1./12.))
+            fct += ((1/pow(delta_x,2))*0.625)
+
+            v += (-1*getDataD1NonUni(input_array,i-2)*(1/pow(delta_x,2))* (1./12.))
+            fct += ((1/pow(delta_x,2))*0.625)
+
+            v += ((16.)*getDataD1NonUni(input_array,i-1)*(1/pow(delta_x,2))* (1./12.))
+            fct += ((1/pow(delta_x,2))*0.625)
+
+            val = relax_param * ((v-getDataD1NonUni(rhs_array,i))/fct) + (1-relax_param)*getDataD1NonUni(input_array,i)
+            setDataD1NonUni(output_array,i,val)
+    return output_array
+
 def setD1Q3(output_array,i,val):
     output_array[i] = val
     return output_array

@@ -37,9 +37,10 @@ A_trial = np.array([[-2,1,0,0,0,0,0,0],
               [0,0,0,0,0,0,1,-2]])
 ##O(h²)
 input_array_3 = np.array([1.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,144.])
+input_array_3_non_uni = np.copy(input_array_3)
 input_array_5 = np.array([1.,4.,0.,0.,0.,0.,0.,0.,0.,0.,121.,144.])
-
 output_array_3 = np.copy(input_array_3)
+output_array_3_non_uni = np.copy(output_array_3)
 rhs_array_3 = np.array([2,2,2,2,2,2,2,2,2,2,2,2])
 
 output_array_5 = np.copy(input_array_5)
@@ -52,36 +53,48 @@ b_trial = np.array([2,24,24,24,24,24,105,-79])
 real_sol =[(x+1)*(x+1) for x in range(12)]
 dif_3 = np.zeros(12)
 dif_5 = np.zeros(12)
+dif_non_uni= np.zeros(12)
 
-number_of_iter = 300 
+
+number_of_iter = 300
 relax = 2.0/3.0
+
 percent_error_3_through_iterations = np.zeros(number_of_iter)
+percent_error_non_uni_through_iterations = np.zeros(number_of_iter)
 percent_error_5_through_iterations = np.zeros(number_of_iter)
 for i in range(number_of_iter):
     input_array_3=ker.ExecuteOneJacobiStepD1Q3(input_array_3,output_array_3, rhs_array_3, relax)
     input_array_5=ker.ExecuteOneJacobiStepD1Q5(input_array_5,output_array_5, rhs_array_5, relax)
+    input_array_3_non_uni=ker.ExecuteOneJacobiStepD1NonUnii(input_array_3_non_uni, output_array_3_non_uni, rhs_array_3, relax)
     for j in range(12):
         dif_3[j] = ((abs(output_array_3[j] - real_sol[j]))/real_sol[j]) * 100
+        dif_non_uni[j] = ((abs(output_array_3_non_uni[j] - real_sol[j]))/real_sol[j]) * 100
         dif_5[j] = ((abs(output_array_5[j] - real_sol[j]))/real_sol[j]) * 100
     percent_error_3 = 0
+    percent_error_non_uni = 0
     percent_error_5 = 0
     for j in range(12):
         percent_error_3 += dif_3[j]
         percent_error_5 += dif_5[j]
+        percent_error_non_uni += dif_non_uni[j]
     percent_error_3 /= 10
+    percent_error_non_uni /= 10
     percent_error_5 /= 8
     percent_error_3_through_iterations[i]= percent_error_3
+    percent_error_non_uni_through_iterations[i]= percent_error_non_uni
     percent_error_5_through_iterations[i]= percent_error_5
 
 
 
 
-#print("d1q3 : ",[x for x in output_array_3])
-#print("d1q5 : ",[x for x in output_array_5])
+print("d1q3 : ",[x for x in output_array_3])
+print("d1qnonuni : ",[x for x in output_array_3_non_uni])
+print("d1q5 : ",[x for x in output_array_5])
 
 a_range = np.arange(0.,number_of_iter)
 plt.plot(a_range,percent_error_3_through_iterations,'-r',label='D1Q3')
 plt.plot(a_range,percent_error_5_through_iterations,'-g',label='D1Q5')
+plt.plot(a_range,percent_error_non_uni_through_iterations,'-p',label='D1Qnonuni')
 plt.ylabel('average percent difference')
 plt.xlabel('iteration')
 plt.legend()
